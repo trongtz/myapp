@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PWA Demo</title>
+  <style>
+    /* CSS trực tiếp trong file */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background: #f0f0f0;
+    }
+    header {
+      background: #4CAF50;
+      color: white;
+      padding: 1em;
+      font-size: 1.5em;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #4CAF50;
+      color: white;
+      font-size: 1.1em;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <header>🌟 Ứng dụng PWA Demo 🌟</header>
+  <p>Chào mừng bạn đến với ứng dụng web offline.</p>
+  <button onclick="sayHello()">Bấm vào tôi</button>
+
+  <script>
+    // JavaScript trực tiếp trong file
+    function sayHello() {
+      alert("Xin chào từ PWA Demo!");
+    }
+
+    // Đăng ký service worker (code inline luôn)
+    if ("serviceWorker" in navigator) {
+      const swCode = `
+        self.addEventListener("install", event => {
+          console.log("Service Worker cài đặt");
+          event.waitUntil(
+            caches.open("app-cache").then(cache => {
+              return cache.addAll(["/"]);
+            })
+          );
+        });
+
+        self.addEventListener("fetch", event => {
+          event.respondWith(
+            caches.match(event.request).then(response => {
+              return response || fetch(event.request);
+            })
+          );
+        });
+      `;
+      const blob = new Blob([swCode], { type: "application/javascript" });
+      const swURL = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(swURL);
+    }
+  </script>
+</body>
+</html>
